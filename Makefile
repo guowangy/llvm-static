@@ -35,14 +35,15 @@ $(LLVM_RELEASE_DIR)/build/CMakeCache.txt: $(LLVM_RELEASE_DIR)
 	cd $(LLVM_RELEASE_DIR)/build && env CC=clang CXX=clang++ cmake \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX=$(PWD)/$(LLVM_INSTALL_DIR) \
-		-DCMAKE_OSX_ARCHITECTURES='x86_64;arm64' \
 		-DLIBCLANG_BUILD_STATIC=ON \
+		-DLLVM_BUILD_STATIC=ON \
+		-DLLVM_BUILD_LLVM_DYLIB=OFF \
 		-DLLVM_ENABLE_BINDINGS=OFF \
 		-DLLVM_ENABLE_LIBXML2=OFF \
 		-DLLVM_ENABLE_LTO=OFF \
 		-DLLVM_ENABLE_OCAMLDOC=OFF \
 		-DLLVM_ENABLE_PIC=OFF \
-		-DLLVM_ENABLE_PROJECTS='clang;lld' \
+		-DLLVM_ENABLE_PROJECTS='llvm' \
 		-DLLVM_ENABLE_TERMINFO=OFF \
 		-DLLVM_ENABLE_WARNINGS=OFF \
 		-DLLVM_ENABLE_Z3_SOLVER=OFF \
@@ -64,12 +65,6 @@ $(LLVM_RELEASE_DIR)/build/CMakeCache.txt: $(LLVM_RELEASE_DIR)
 llvm: $(LLVM_RELEASE_DIR)/build/CMakeCache.txt
 	mkdir -p $(LLVM_INSTALL_DIR)
 	make -C $(LLVM_RELEASE_DIR)/build -j$(NUM_THREADS) install
-	rm -r $(LLVM_INSTALL_DIR)/share/
-	rm -r $(LLVM_INSTALL_DIR)/lib/clang/
-	rm -r $(LLVM_INSTALL_DIR)/lib/cmake/
-	rm -r $(LLVM_INSTALL_DIR)/libexec/
-	rm `ls -rtd $(LLVM_INSTALL_DIR)/bin/* | grep -v llvm-config | grep -v llc | grep -v clang | grep -v lld`
-	rm `ls -rtd $(LLVM_INSTALL_DIR)/bin/* | grep clang- | grep -v -E 'clang-[0-9]+'`
 
 # The output of this command is used by Cirrus CI as a cache key,
 # so that it can know when to invalidate the cache.
